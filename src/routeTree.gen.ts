@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppTemplatesRouteImport } from './routes/_app/templates'
+import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppEditorRouteImport } from './routes/_app/editor'
 import { Route as AppAtsRouteImport } from './routes/_app/ats'
 
@@ -29,6 +30,11 @@ const AppTemplatesRoute = AppTemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppEditorRoute = AppEditorRouteImport.update({
   id: '/editor',
   path: '/editor',
@@ -44,11 +50,13 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/ats': typeof AppAtsRoute
   '/editor': typeof AppEditorRoute
+  '/settings': typeof AppSettingsRoute
   '/templates': typeof AppTemplatesRoute
 }
 export interface FileRoutesByTo {
   '/ats': typeof AppAtsRoute
   '/editor': typeof AppEditorRoute
+  '/settings': typeof AppSettingsRoute
   '/templates': typeof AppTemplatesRoute
   '/': typeof AppIndexRoute
 }
@@ -57,19 +65,21 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/_app/ats': typeof AppAtsRoute
   '/_app/editor': typeof AppEditorRoute
+  '/_app/settings': typeof AppSettingsRoute
   '/_app/templates': typeof AppTemplatesRoute
   '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ats' | '/editor' | '/templates'
+  fullPaths: '/' | '/ats' | '/editor' | '/settings' | '/templates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/ats' | '/editor' | '/templates' | '/'
+  to: '/ats' | '/editor' | '/settings' | '/templates' | '/'
   id:
     | '__root__'
     | '/_app'
     | '/_app/ats'
     | '/_app/editor'
+    | '/_app/settings'
     | '/_app/templates'
     | '/_app/'
   fileRoutesById: FileRoutesById
@@ -101,6 +111,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTemplatesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/settings': {
+      id: '/_app/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/editor': {
       id: '/_app/editor'
       path: '/editor'
@@ -121,6 +138,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAtsRoute: typeof AppAtsRoute
   AppEditorRoute: typeof AppEditorRoute
+  AppSettingsRoute: typeof AppSettingsRoute
   AppTemplatesRoute: typeof AppTemplatesRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -128,6 +146,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAtsRoute: AppAtsRoute,
   AppEditorRoute: AppEditorRoute,
+  AppSettingsRoute: AppSettingsRoute,
   AppTemplatesRoute: AppTemplatesRoute,
   AppIndexRoute: AppIndexRoute,
 }
