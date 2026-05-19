@@ -76,7 +76,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "description", content: "Trình xây dựng CV kiểu Overleaf cho sinh viên IT." },
       { name: "author", content: "DevResume" },
       { property: "og:title", content: "DevResume — CV builder cho IT" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:description", content: "Tạo CV chuyên nghiệp, kiểm tra ATS, xuất PDF." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
