@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppTemplatesRouteImport } from './routes/_app/templates'
 import { Route as AppEditorRouteImport } from './routes/_app/editor'
+import { Route as AppAtsRouteImport } from './routes/_app/ats'
 
 const AppRoute = AppRouteImport.update({
   id: '/_app',
@@ -33,13 +34,20 @@ const AppEditorRoute = AppEditorRouteImport.update({
   path: '/editor',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAtsRoute = AppAtsRouteImport.update({
+  id: '/ats',
+  path: '/ats',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/ats': typeof AppAtsRoute
   '/editor': typeof AppEditorRoute
   '/templates': typeof AppTemplatesRoute
 }
 export interface FileRoutesByTo {
+  '/ats': typeof AppAtsRoute
   '/editor': typeof AppEditorRoute
   '/templates': typeof AppTemplatesRoute
   '/': typeof AppIndexRoute
@@ -47,16 +55,23 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/_app/ats': typeof AppAtsRoute
   '/_app/editor': typeof AppEditorRoute
   '/_app/templates': typeof AppTemplatesRoute
   '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/editor' | '/templates'
+  fullPaths: '/' | '/ats' | '/editor' | '/templates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/editor' | '/templates' | '/'
-  id: '__root__' | '/_app' | '/_app/editor' | '/_app/templates' | '/_app/'
+  to: '/ats' | '/editor' | '/templates' | '/'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/_app/ats'
+    | '/_app/editor'
+    | '/_app/templates'
+    | '/_app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -93,16 +108,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEditorRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/ats': {
+      id: '/_app/ats'
+      path: '/ats'
+      fullPath: '/ats'
+      preLoaderRoute: typeof AppAtsRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAtsRoute: typeof AppAtsRoute
   AppEditorRoute: typeof AppEditorRoute
   AppTemplatesRoute: typeof AppTemplatesRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAtsRoute: AppAtsRoute,
   AppEditorRoute: AppEditorRoute,
   AppTemplatesRoute: AppTemplatesRoute,
   AppIndexRoute: AppIndexRoute,
