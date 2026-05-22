@@ -8,10 +8,13 @@ import {
   sampleResumes,
   uid,
 } from "./resume-types";
+import type { RecommendResult, RecommendInput } from "./recommend";
 
 interface ResumeStore {
   resumes: Resume[];
   activeId: string | null;
+  lastRecommendation: (RecommendResult & { input: RecommendInput }) | null;
+  setRecommendation: (r: (RecommendResult & { input: RecommendInput }) | null) => void;
   setActive: (id: string) => void;
   createResume: (title?: string) => string;
   duplicateResume: (id: string) => void;
