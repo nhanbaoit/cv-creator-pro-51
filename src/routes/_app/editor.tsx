@@ -11,9 +11,12 @@ import { CvPreview } from "@/components/app/CvPreview";
 import { useActiveResume, useResumeStore } from "@/lib/resume-store";
 import { computeAts } from "@/lib/ats";
 import { TemplateId, uid } from "@/lib/resume-types";
-import { Download, Plus, Trash2, ShieldCheck } from "lucide-react";
+import { Download, Plus, Trash2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useMemo } from "react";
+import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
+import { TEMPLATE_META } from "@/lib/recommend";
+import { Button as Btn } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_app/editor")({
   component: EditorPage,
