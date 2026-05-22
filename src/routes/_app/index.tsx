@@ -39,6 +39,7 @@ function DashboardPage() {
   return (
     <>
       <Topbar title="CV của tôi" subtitle="Quản lý tất cả CV của bạn">
+        <SmartRecommendationDialog />
         <Button onClick={handleCreate}><Plus /> Tạo CV mới</Button>
       </Topbar>
       <main className="p-6 md:p-8 max-w-7xl w-full mx-auto">
