@@ -45,12 +45,13 @@ function RecommendForm({ onResult, compact }: FormProps) {
   const [style, setStyle] = useState<ResumeStyle>("professional");
   const [result, setResult] = useState<RecommendResult | null>(null);
   const resume = useActiveResume();
-  const { setTemplate, createResume } = useResumeStore();
+  const { setTemplate, createResume, setRecommendation } = useResumeStore();
   const navigate = useNavigate();
 
   const submit = () => {
     const r = recommendTemplate({ role, experience: exp, style });
     setResult(r);
+    setRecommendation({ ...r, input: { role, experience: exp, style } });
     onResult?.(r);
   };
 
