@@ -33,6 +33,8 @@ export const useResumeStore = create<ResumeStore>()(
     (set, get) => ({
       resumes: seed,
       activeId: seed[0]?.id ?? null,
+      lastRecommendation: null,
+      setRecommendation: (r) => set({ lastRecommendation: r }),
       setActive: (id) => set({ activeId: id }),
       createResume: (title = "CV mới") => {
         const r: Resume = {
