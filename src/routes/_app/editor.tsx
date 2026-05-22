@@ -31,7 +31,7 @@ const templateLabels: Record<TemplateId, string> = {
 
 function EditorPage() {
   const resume = useActiveResume();
-  const { updateData, setTemplate, resumes, setActive } = useResumeStore();
+  const { updateData, setTemplate, resumes, setActive, lastRecommendation } = useResumeStore();
 
   const ats = useMemo(() => (resume ? computeAts(resume.data) : null), [resume]);
 
