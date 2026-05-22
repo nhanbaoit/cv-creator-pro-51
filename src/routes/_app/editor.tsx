@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { useMemo } from "react";
 import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
 import { TEMPLATE_META } from "@/lib/recommend";
-import { Button as Btn } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_app/editor")({
   component: EditorPage,
