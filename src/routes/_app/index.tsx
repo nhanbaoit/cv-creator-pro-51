@@ -10,6 +10,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Topbar } from "@/components/app/Topbar";
+import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
 
 export const Route = createFileRoute("/_app/")({
   component: DashboardPage,
