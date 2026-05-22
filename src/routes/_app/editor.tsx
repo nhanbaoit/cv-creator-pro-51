@@ -11,9 +11,12 @@ import { CvPreview } from "@/components/app/CvPreview";
 import { useActiveResume, useResumeStore } from "@/lib/resume-store";
 import { computeAts } from "@/lib/ats";
 import { TemplateId, uid } from "@/lib/resume-types";
-import { Download, Plus, Trash2, ShieldCheck } from "lucide-react";
+import { Download, Plus, Trash2, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { useMemo } from "react";
+import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
+import { TEMPLATE_META } from "@/lib/recommend";
+import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_app/editor")({
   component: EditorPage,
@@ -28,7 +31,7 @@ const templateLabels: Record<TemplateId, string> = {
 
 function EditorPage() {
   const resume = useActiveResume();
-  const { updateData, setTemplate, resumes, setActive } = useResumeStore();
+  const { updateData, setTemplate, resumes, setActive, lastRecommendation } = useResumeStore();
 
   const ats = useMemo(() => (resume ? computeAts(resume.data) : null), [resume]);
 
@@ -48,20 +51,39 @@ function EditorPage() {
   return (
     <>
       <Topbar title="CV Editor" subtitle={resume.title}>
+        <div className="hidden lg:flex flex-col items-end leading-tight mr-1">
+          <div className="text-xs text-muted-foreground">Current template</div>
+          <div className="text-sm font-medium flex items-center gap-1.5">
+            {templateLabels[resume.template]}
+            {lastRecommendation && lastRecommendation.template !== resume.template && (
+              <Badge variant="secondary" className="gap-1 text-[10px]">
+                <Sparkles className="h-3 w-3" />
+                Recommended: {templateLabels[lastRecommendation.template]}
+              </Badge>
+            )}
+          </div>
+        </div>
         <Select value={resume.id} onValueChange={setActive}>
-          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             {resumes.map((r) => <SelectItem key={r.id} value={r.id}>{r.title}</SelectItem>)}
           </SelectContent>
         </Select>
         <Select value={resume.template} onValueChange={(v) => setTemplate(id, v as TemplateId)}>
-          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             {(Object.keys(templateLabels) as TemplateId[]).map((t) => (
               <SelectItem key={t} value={t}>{templateLabels[t]}</SelectItem>
             ))}
           </SelectContent>
         </Select>
+        <SmartRecommendationDialog
+          trigger={
+            <Button variant="outline" className="gap-2">
+              <Sparkles className="h-4 w-4" /> Change Template
+            </Button>
+          }
+        />
         <div className="hidden sm:flex items-center gap-2 px-3 h-9 rounded-md bg-primary/10 text-primary text-sm font-medium">
           <ShieldCheck className="h-4 w-4" /> ATS {ats?.score}/100
         </div>

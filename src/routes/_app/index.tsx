@@ -10,6 +10,7 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Topbar } from "@/components/app/Topbar";
+import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
 
 export const Route = createFileRoute("/_app/")({
   component: DashboardPage,
@@ -38,6 +39,7 @@ function DashboardPage() {
   return (
     <>
       <Topbar title="CV của tôi" subtitle="Quản lý tất cả CV của bạn">
+        <SmartRecommendationDialog />
         <Button onClick={handleCreate}><Plus /> Tạo CV mới</Button>
       </Topbar>
       <main className="p-6 md:p-8 max-w-7xl w-full mx-auto">
