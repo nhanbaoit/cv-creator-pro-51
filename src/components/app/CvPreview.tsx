@@ -227,9 +227,17 @@ function CreativeTemplate({ data }: { data: ResumeData }) {
   return (
     <div className="text-[10.5pt] text-neutral-900 font-sans grid grid-cols-3 gap-4">
       <aside className="col-span-1 bg-neutral-900 text-white -m-[14mm] mr-0 p-5 space-y-3">
-        <div className="h-20 w-20 rounded-full bg-fuchsia-500 grid place-items-center text-2xl font-bold">
-          {p.fullName.split(" ").slice(-1)[0]?.[0]}
-        </div>
+        {p.avatar ? (
+          <img
+            src={p.avatar}
+            alt={p.fullName}
+            className="h-24 w-24 rounded-full object-cover border-4 border-fuchsia-500"
+          />
+        ) : (
+          <div className="h-24 w-24 rounded-full bg-fuchsia-500 grid place-items-center text-3xl font-bold">
+            {p.fullName.split(" ").slice(-1)[0]?.[0]}
+          </div>
+        )}
         <h1 className="text-[16pt] font-bold leading-tight">{p.fullName}</h1>
         <p className="text-fuchsia-300">{p.title}</p>
         <div className="space-y-1 text-[9pt]">
