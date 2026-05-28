@@ -19,10 +19,10 @@ export const Route = createFileRoute("/_app/")({
 function formatTime(ts: number) {
   const diff = Date.now() - ts;
   const h = Math.floor(diff / 3600000);
-  if (h < 1) return "vài phút trước";
-  if (h < 24) return `${h} giờ trước`;
+  if (h < 1) return "a few minutes ago";
+  if (h < 24) return `${h} hour${h === 1 ? "" : "s"} ago`;
   const d = Math.floor(h / 24);
-  return `${d} ngày trước`;
+  return `${d} day${d === 1 ? "" : "s"} ago`;
 }
 
 function DashboardPage() {
@@ -30,25 +30,25 @@ function DashboardPage() {
   const navigate = useNavigate();
 
   const handleCreate = () => {
-    const id = createResume("CV mới");
+    const id = createResume("Untitled CV");
     setActive(id);
-    toast.success("Đã tạo CV mới");
+    toast.success("New CV created");
     navigate({ to: "/editor" });
   };
 
   return (
     <>
-      <Topbar title="CV của tôi" subtitle="Quản lý tất cả CV của bạn">
+      <Topbar title="My Resumes" subtitle="Manage all your CVs in one place">
         <SmartRecommendationDialog />
-        <Button onClick={handleCreate}><Plus /> Tạo CV mới</Button>
+        <Button onClick={handleCreate}><Plus /> New CV</Button>
       </Topbar>
       <main className="p-6 md:p-8 max-w-7xl w-full mx-auto">
         {resumes.length === 0 ? (
           <Card className="p-12 text-center border-dashed">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-            <h3 className="font-semibold text-lg">Chưa có CV nào</h3>
-            <p className="text-sm text-muted-foreground mb-4">Bắt đầu xây dựng CV đầu tiên của bạn ngay bây giờ.</p>
-            <Button onClick={handleCreate}><Plus /> Tạo CV mới</Button>
+            <h3 className="font-semibold text-lg">No resumes yet</h3>
+            <p className="text-sm text-muted-foreground mb-4">Start building your first CV right now.</p>
+            <Button onClick={handleCreate}><Plus /> Create CV</Button>
           </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -87,9 +87,9 @@ function DashboardPage() {
                   </div>
                   <div className="flex gap-2 mt-auto">
                     <Button size="sm" className="flex-1" asChild onClick={() => setActive(r.id)}>
-                      <Link to="/editor"><FileEdit /> Chỉnh sửa</Link>
+                      <Link to="/editor"><FileEdit /> Edit</Link>
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => { duplicateResume(r.id); toast.success("Đã nhân bản"); }}>
+                    <Button size="sm" variant="outline" onClick={() => { duplicateResume(r.id); toast.success("Resume duplicated"); }}>
                       <Copy />
                     </Button>
                     <AlertDialog>
@@ -98,16 +98,16 @@ function DashboardPage() {
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>Xóa CV?</AlertDialogTitle>
+                          <AlertDialogTitle>Delete this resume?</AlertDialogTitle>
                           <AlertDialogDescription>
-                            Hành động này không thể hoàn tác. CV "{r.title}" sẽ bị xóa vĩnh viễn.
+                            This action can't be undone. "{r.title}" will be permanently removed.
                           </AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>Hủy</AlertDialogCancel>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => { deleteResume(r.id); toast.success("Đã xóa CV"); }}
-                          >Xóa</AlertDialogAction>
+                            onClick={() => { deleteResume(r.id); toast.success("Resume deleted"); }}
+                          >Delete</AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>

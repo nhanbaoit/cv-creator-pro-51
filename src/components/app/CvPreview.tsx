@@ -106,9 +106,18 @@ function ModernTemplate({ data }: { data: ResumeData }) {
   return (
     <div className="text-[10.5pt] text-neutral-900 font-sans">
       <header className="flex items-start justify-between gap-6 pb-3 border-b-2 border-indigo-600">
-        <div>
-          <h1 className="text-[22pt] font-bold leading-tight text-neutral-900">{p.fullName}</h1>
-          <p className="text-[12pt] text-indigo-700 font-medium">{p.title}</p>
+        <div className="flex items-center gap-3">
+          {p.avatar && (
+            <img
+              src={p.avatar}
+              alt={p.fullName}
+              className="h-16 w-16 rounded-full object-cover border-2 border-indigo-600"
+            />
+          )}
+          <div>
+            <h1 className="text-[22pt] font-bold leading-tight text-neutral-900">{p.fullName}</h1>
+            <p className="text-[12pt] text-indigo-700 font-medium">{p.title}</p>
+          </div>
         </div>
         <div className="text-[9pt] text-right space-y-0.5">
           {p.email && <div className="flex items-center gap-1 justify-end"><Mail className="h-3 w-3"/>{p.email}</div>}
@@ -119,6 +128,7 @@ function ModernTemplate({ data }: { data: ResumeData }) {
           {p.portfolio && <div className="flex items-center gap-1 justify-end"><Globe className="h-3 w-3"/>{p.portfolio}</div>}
         </div>
       </header>
+
       <ModernSection title="Profile">{data.summary}</ModernSection>
       <ModernSection title="Skills">
         <div className="grid grid-cols-2 gap-x-4">
@@ -217,9 +227,17 @@ function CreativeTemplate({ data }: { data: ResumeData }) {
   return (
     <div className="text-[10.5pt] text-neutral-900 font-sans grid grid-cols-3 gap-4">
       <aside className="col-span-1 bg-neutral-900 text-white -m-[14mm] mr-0 p-5 space-y-3">
-        <div className="h-20 w-20 rounded-full bg-fuchsia-500 grid place-items-center text-2xl font-bold">
-          {p.fullName.split(" ").slice(-1)[0]?.[0]}
-        </div>
+        {p.avatar ? (
+          <img
+            src={p.avatar}
+            alt={p.fullName}
+            className="h-24 w-24 rounded-full object-cover border-4 border-fuchsia-500"
+          />
+        ) : (
+          <div className="h-24 w-24 rounded-full bg-fuchsia-500 grid place-items-center text-3xl font-bold">
+            {p.fullName.split(" ").slice(-1)[0]?.[0]}
+          </div>
+        )}
         <h1 className="text-[16pt] font-bold leading-tight">{p.fullName}</h1>
         <p className="text-fuchsia-300">{p.title}</p>
         <div className="space-y-1 text-[9pt]">

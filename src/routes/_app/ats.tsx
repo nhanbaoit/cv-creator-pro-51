@@ -17,17 +17,17 @@ function AtsPage() {
   const [jd, setJd] = useState("");
 
   if (!resume) {
-    return <><Topbar title="ATS Checker" /><div className="p-8 text-muted-foreground">Chưa có CV.</div></>;
+    return <><Topbar title="ATS Checker" /><div className="p-8 text-muted-foreground">No resume yet.</div></>;
   }
 
   const ats = useMemo(() => computeAts(resume.data), [resume]);
   const match = useMemo(() => matchJobKeywords(resume.data, jd), [resume, jd]);
 
-  const suggestions = ats.breakdown.filter((b) => !b.ok).map((b) => `Cải thiện: ${b.label}`);
+  const suggestions = ats.breakdown.filter((b) => !b.ok).map((b) => `Improve: ${b.label}`);
 
   return (
     <>
-      <Topbar title="ATS Checker" subtitle="Kiểm tra mức độ thân thiện với hệ thống ATS" />
+      <Topbar title="ATS Checker" subtitle="Check how well your CV passes ATS systems" />
       <main className="p-6 md:p-8 max-w-6xl w-full mx-auto grid lg:grid-cols-3 gap-5">
         <Card className="p-5">
           <div className="text-sm text-muted-foreground">ATS Score</div>
@@ -46,7 +46,7 @@ function AtsPage() {
         </Card>
 
         <Card className="p-5 lg:col-span-2">
-          <h3 className="font-semibold mb-3">Chi tiết tiêu chí ATS</h3>
+          <h3 className="font-semibold mb-3">ATS criteria breakdown</h3>
           <div className="space-y-2">
             {ats.breakdown.map((b) => (
               <div key={b.label} className="flex items-center justify-between text-sm border-b last:border-0 pb-2">
@@ -61,9 +61,9 @@ function AtsPage() {
         </Card>
 
         <Card className="p-5">
-          <h3 className="font-semibold mb-3 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-warning"/> Gợi ý cải thiện</h3>
+          <h3 className="font-semibold mb-3 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-warning"/> Suggestions</h3>
           {suggestions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">CV của bạn đã đạt chuẩn ATS! 🎉</p>
+            <p className="text-sm text-muted-foreground">Your CV is ATS-ready! 🎉</p>
           ) : (
             <ul className="space-y-2 text-sm">
               {suggestions.map((s, i) => <li key={i} className="flex gap-2"><span className="text-primary">•</span>{s}</li>)}
@@ -72,21 +72,21 @@ function AtsPage() {
         </Card>
 
         <Card className="p-5 lg:col-span-3 space-y-3">
-          <h3 className="font-semibold">So khớp Job Description</h3>
-          <Textarea rows={5} placeholder="Dán mô tả công việc (Job Description) vào đây..." value={jd} onChange={(e)=>setJd(e.target.value)} />
+          <h3 className="font-semibold">Match against Job Description</h3>
+          <Textarea rows={5} placeholder="Paste the job description here..." value={jd} onChange={(e)=>setJd(e.target.value)} />
           {jd && (
             <div className="grid md:grid-cols-2 gap-4 mt-2">
               <div>
-                <div className="text-sm font-medium mb-2 text-emerald-700">Từ khóa khớp ({match.matched.length})</div>
+                <div className="text-sm font-medium mb-2 text-emerald-700">Matched keywords ({match.matched.length})</div>
                 <div className="flex flex-wrap gap-1.5">
                   {match.matched.slice(0, 60).map((k) => (
                     <span key={k} className="text-xs px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">{k}</span>
                   ))}
-                  {match.matched.length === 0 && <span className="text-xs text-muted-foreground">Không có</span>}
+                  {match.matched.length === 0 && <span className="text-xs text-muted-foreground">None</span>}
                 </div>
               </div>
               <div>
-                <div className="text-sm font-medium mb-2 text-destructive">Từ khóa còn thiếu ({match.missing.length})</div>
+                <div className="text-sm font-medium mb-2 text-destructive">Missing keywords ({match.missing.length})</div>
                 <div className="flex flex-wrap gap-1.5">
                   {match.missing.slice(0, 60).map((k) => (
                     <span key={k} className="text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive">{k}</span>
@@ -96,6 +96,7 @@ function AtsPage() {
             </div>
           )}
         </Card>
+
       </main>
     </>
   );

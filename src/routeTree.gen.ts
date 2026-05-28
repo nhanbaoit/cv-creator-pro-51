@@ -9,6 +9,8 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
 import { Route as AppTemplatesRouteImport } from './routes/_app/templates'
@@ -16,6 +18,16 @@ import { Route as AppSettingsRouteImport } from './routes/_app/settings'
 import { Route as AppEditorRouteImport } from './routes/_app/editor'
 import { Route as AppAtsRouteImport } from './routes/_app/ats'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
@@ -48,12 +60,16 @@ const AppAtsRoute = AppAtsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/ats': typeof AppAtsRoute
   '/editor': typeof AppEditorRoute
   '/settings': typeof AppSettingsRoute
   '/templates': typeof AppTemplatesRoute
 }
 export interface FileRoutesByTo {
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/ats': typeof AppAtsRoute
   '/editor': typeof AppEditorRoute
   '/settings': typeof AppSettingsRoute
@@ -63,6 +79,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_app/ats': typeof AppAtsRoute
   '/_app/editor': typeof AppEditorRoute
   '/_app/settings': typeof AppSettingsRoute
@@ -71,12 +89,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/ats' | '/editor' | '/settings' | '/templates'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/ats'
+    | '/editor'
+    | '/settings'
+    | '/templates'
   fileRoutesByTo: FileRoutesByTo
-  to: '/ats' | '/editor' | '/settings' | '/templates' | '/'
+  to:
+    | '/login'
+    | '/register'
+    | '/ats'
+    | '/editor'
+    | '/settings'
+    | '/templates'
+    | '/'
   id:
     | '__root__'
     | '/_app'
+    | '/login'
+    | '/register'
     | '/_app/ats'
     | '/_app/editor'
     | '/_app/settings'
@@ -86,10 +120,26 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app': {
       id: '/_app'
       path: ''
@@ -155,6 +205,8 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

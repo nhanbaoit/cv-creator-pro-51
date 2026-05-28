@@ -11,11 +11,10 @@ import { CvPreview } from "@/components/app/CvPreview";
 import { useActiveResume, useResumeStore } from "@/lib/resume-store";
 import { computeAts } from "@/lib/ats";
 import { TemplateId, uid } from "@/lib/resume-types";
-import { Download, Plus, Trash2, ShieldCheck, Sparkles } from "lucide-react";
+import { Download, Plus, Trash2, ShieldCheck, Sparkles, Upload, X } from "lucide-react";
 import { toast } from "sonner";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
-import { TEMPLATE_META } from "@/lib/recommend";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_app/editor")({
@@ -29,9 +28,13 @@ const templateLabels: Record<TemplateId, string> = {
   creative: "Creative Portfolio",
 };
 
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
+const ALLOWED_AVATAR_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+
 function EditorPage() {
   const resume = useActiveResume();
   const { updateData, setTemplate, resumes, setActive, lastRecommendation } = useResumeStore();
+  const avatarInputRef = useRef<HTMLInputElement>(null);
 
   const ats = useMemo(() => (resume ? computeAts(resume.data) : null), [resume]);
 
@@ -39,7 +42,7 @@ function EditorPage() {
     return (
       <>
         <Topbar title="CV Editor" />
-        <div className="p-8 text-muted-foreground">Chưa có CV nào. Hãy tạo từ Dashboard.</div>
+        <div className="p-8 text-muted-foreground">No resume yet. Create one from the Dashboard.</div>
       </>
     );
   }
@@ -47,6 +50,25 @@ function EditorPage() {
   const d = resume.data;
   const id = resume.id;
   const setD = (updater: (data: typeof d) => typeof d) => updateData(id, updater);
+
+  const onAvatarFile = (file: File) => {
+    if (!ALLOWED_AVATAR_TYPES.includes(file.type)) {
+      toast.error("Only PNG, JPG, or WEBP images are allowed");
+      return;
+    }
+    if (file.size > MAX_AVATAR_BYTES) {
+      toast.error("Image must be under 2MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      setD((dd) => ({ ...dd, personal: { ...dd.personal, avatar: result } }));
+      toast.success("Avatar uploaded");
+    };
+    reader.onerror = () => toast.error("Failed to read image");
+    reader.readAsDataURL(file);
+  };
 
   return (
     <>
@@ -87,7 +109,7 @@ function EditorPage() {
         <div className="hidden sm:flex items-center gap-2 px-3 h-9 rounded-md bg-primary/10 text-primary text-sm font-medium">
           <ShieldCheck className="h-4 w-4" /> ATS {ats?.score}/100
         </div>
-        <Button onClick={() => { toast.success("Đang chuẩn bị PDF..."); setTimeout(() => window.print(), 200); }}>
+        <Button onClick={() => { toast.success("Preparing PDF..."); setTimeout(() => window.print(), 200); }}>
           <Download /> Export PDF
         </Button>
       </Topbar>
@@ -97,24 +119,68 @@ function EditorPage() {
         <div className="border-r overflow-y-auto p-5 max-h-[calc(100vh-4rem)]">
           <Tabs defaultValue="personal" className="w-full">
             <TabsList className="flex-wrap h-auto justify-start">
-              <TabsTrigger value="personal">Thông tin</TabsTrigger>
-              <TabsTrigger value="summary">Tóm tắt</TabsTrigger>
-              <TabsTrigger value="education">Học vấn</TabsTrigger>
-              <TabsTrigger value="skills">Kỹ năng</TabsTrigger>
-              <TabsTrigger value="projects">Dự án</TabsTrigger>
-              <TabsTrigger value="experience">Kinh nghiệm</TabsTrigger>
-              <TabsTrigger value="certificates">Chứng chỉ</TabsTrigger>
-              <TabsTrigger value="languages">Ngôn ngữ</TabsTrigger>
+              <TabsTrigger value="personal">Personal Info</TabsTrigger>
+              <TabsTrigger value="summary">Summary</TabsTrigger>
+              <TabsTrigger value="education">Education</TabsTrigger>
+              <TabsTrigger value="skills">Skills</TabsTrigger>
+              <TabsTrigger value="projects">Projects</TabsTrigger>
+              <TabsTrigger value="experience">Experience</TabsTrigger>
+              <TabsTrigger value="certificates">Certificates</TabsTrigger>
+              <TabsTrigger value="languages">Languages</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="personal" className="mt-4">
+            <TabsContent value="personal" className="mt-4 space-y-4">
+              <Card className="p-5">
+                <h3 className="font-semibold mb-3">Avatar</h3>
+                <div className="flex items-center gap-5">
+                  <div className="h-24 w-24 rounded-full bg-muted overflow-hidden border grid place-items-center text-muted-foreground text-xs">
+                    {d.personal.avatar ? (
+                      <img src={d.personal.avatar} alt="Avatar" className="h-full w-full object-cover" />
+                    ) : (
+                      "No image"
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => avatarInputRef.current?.click()}>
+                        <Upload className="h-4 w-4" /> Upload
+                      </Button>
+                      {d.personal.avatar && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          onClick={() =>
+                            setD((dd) => ({ ...dd, personal: { ...dd.personal, avatar: undefined } }))
+                          }
+                        >
+                          <X className="h-4 w-4" /> Remove Avatar
+                        </Button>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Recommended: square image under 2MB. PNG, JPG, or WEBP.
+                    </p>
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/png,image/jpeg,image/jpg,image/webp"
+                      className="hidden"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0];
+                        if (f) onAvatarFile(f);
+                        e.target.value = "";
+                      }}
+                    />
+                  </div>
+                </div>
+              </Card>
               <Card className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {([
-                  ["fullName", "Họ và tên"],
-                  ["title", "Vị trí ứng tuyển"],
+                  ["fullName", "Full name"],
+                  ["title", "Target role"],
                   ["email", "Email"],
-                  ["phone", "Số điện thoại"],
-                  ["location", "Địa chỉ"],
+                  ["phone", "Phone"],
+                  ["location", "Location"],
                   ["github", "GitHub"],
                   ["linkedin", "LinkedIn"],
                   ["portfolio", "Portfolio"],
@@ -122,7 +188,7 @@ function EditorPage() {
                   <div key={k} className="space-y-1.5">
                     <Label>{label}</Label>
                     <Input
-                      value={d.personal[k]}
+                      value={d.personal[k] ?? ""}
                       onChange={(e) => setD((dd) => ({ ...dd, personal: { ...dd.personal, [k]: e.target.value } }))}
                     />
                   </div>
@@ -134,7 +200,7 @@ function EditorPage() {
               <Card className="p-5 space-y-2">
                 <Label>Professional summary</Label>
                 <Textarea rows={6} value={d.summary} onChange={(e) => setD((dd) => ({ ...dd, summary: e.target.value }))} />
-                <p className="text-xs text-muted-foreground">Mẹo: viết 2–4 câu nêu rõ kỹ năng cốt lõi và mục tiêu.</p>
+                <p className="text-xs text-muted-foreground">Tip: write 2–4 sentences highlighting your core skills and goals.</p>
               </Card>
             </TabsContent>
 
@@ -155,7 +221,7 @@ function EditorPage() {
                 </Card>
               ))}
               <Button variant="outline" onClick={() => setD((dd)=>({...dd,education:[...dd.education,{id:uid(),school:"",major:"",startYear:"",endYear:"",description:""}]}))}>
-                <Plus /> Thêm học vấn
+                <Plus /> Add Education
               </Button>
             </TabsContent>
 
@@ -165,13 +231,13 @@ function EditorPage() {
                   <RowActions onDelete={() => setD((dd) => ({ ...dd, skills: dd.skills.filter((_, j) => j !== i) }))} />
                   <Field label="Category" v={s.category} on={(v)=>upd("skills",i,"category",v)} />
                   <div className="space-y-1.5">
-                    <Label>Skills (phân tách bằng dấu phẩy)</Label>
+                    <Label>Skills (comma-separated)</Label>
                     <Input value={s.items} onChange={(e)=>upd("skills",i,"items",e.target.value)} />
                   </div>
                 </Card>
               ))}
               <Button variant="outline" onClick={() => setD((dd)=>({...dd,skills:[...dd.skills,{id:uid(),category:"",items:""}]}))}>
-                <Plus /> Thêm nhóm kỹ năng
+                <Plus /> Add Skill Group
               </Button>
             </TabsContent>
 
@@ -187,13 +253,13 @@ function EditorPage() {
                     <Field label="Demo" v={p.demo} on={(v)=>upd("projects",i,"demo",v)} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Description (mỗi dòng = 1 bullet)</Label>
+                    <Label>Description (each line = one bullet)</Label>
                     <Textarea rows={4} value={p.description} onChange={(e)=>upd("projects",i,"description",e.target.value)} />
                   </div>
                 </Card>
               ))}
               <Button variant="outline" onClick={() => setD((dd)=>({...dd,projects:[...dd.projects,{id:uid(),name:"",role:"",techStack:"",description:"",github:"",demo:""}]}))}>
-                <Plus /> Thêm dự án
+                <Plus /> Add Project
               </Button>
             </TabsContent>
 
@@ -208,13 +274,13 @@ function EditorPage() {
                     <Field label="End date" v={e.endDate} on={(v)=>upd("experience",i,"endDate",v)} />
                   </div>
                   <div className="space-y-1.5">
-                    <Label>Description (mỗi dòng = 1 bullet)</Label>
+                    <Label>Description (each line = one bullet)</Label>
                     <Textarea rows={3} value={e.description} onChange={(ev)=>upd("experience",i,"description",ev.target.value)} />
                   </div>
                 </Card>
               ))}
               <Button variant="outline" onClick={() => setD((dd)=>({...dd,experience:[...dd.experience,{id:uid(),company:"",position:"",startDate:"",endDate:"",description:""}]}))}>
-                <Plus /> Thêm kinh nghiệm
+                <Plus /> Add Experience
               </Button>
             </TabsContent>
 
@@ -230,7 +296,7 @@ function EditorPage() {
                 </Card>
               ))}
               <Button variant="outline" onClick={() => setD((dd)=>({...dd,certificates:[...dd.certificates,{id:uid(),name:"",issuer:"",date:""}]}))}>
-                <Plus /> Thêm chứng chỉ
+                <Plus /> Add Certificate
               </Button>
             </TabsContent>
 
@@ -245,7 +311,7 @@ function EditorPage() {
                 </Card>
               ))}
               <Button variant="outline" onClick={() => setD((dd)=>({...dd,languages:[...dd.languages,{id:uid(),name:"",level:""}]}))}>
-                <Plus /> Thêm ngôn ngữ
+                <Plus /> Add Language
               </Button>
             </TabsContent>
           </Tabs>

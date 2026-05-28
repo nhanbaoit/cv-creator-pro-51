@@ -1,6 +1,10 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FileEdit, LayoutTemplate, ShieldCheck, Settings, FileText } from "lucide-react";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { LayoutDashboard, FileEdit, LayoutTemplate, ShieldCheck, Settings, FileText, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logoutUser, useAuthStore } from "@/lib/auth";
+import { useResumeStore } from "@/lib/resume-store";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -12,6 +16,26 @@ const items = [
 
 export function AppSidebar() {
   const path = useRouterState({ select: (r) => r.location.pathname });
+  const user = useAuthStore((s) => s.user);
+  const setUser = useAuthStore((s) => s.setUser);
+  const resetMemory = useResumeStore((s) => s.resetMemory);
+  const navigate = useNavigate();
+
+  const initials = (user?.name ?? "U")
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  const onLogout = () => {
+    logoutUser();
+    setUser(null);
+    resetMemory();
+    toast.success("Signed out");
+    navigate({ to: "/login" });
+  };
+
   return (
     <aside className="hidden md:flex w-60 shrink-0 flex-col border-r bg-sidebar text-sidebar-foreground">
       <div className="flex items-center gap-2 px-5 h-16 border-b">
@@ -20,7 +44,7 @@ export function AppSidebar() {
         </div>
         <div className="leading-tight">
           <div className="font-semibold">DevResume</div>
-          <div className="text-xs text-muted-foreground">CV builder cho IT</div>
+          <div className="text-xs text-muted-foreground">CV builder for IT</div>
         </div>
       </div>
       <nav className="p-3 space-y-1 flex-1">
@@ -44,18 +68,21 @@ export function AppSidebar() {
           );
         })}
       </nav>
-      <div className="p-3 border-t">
+      <div className="p-3 border-t space-y-2">
         <div className="flex items-center gap-3 px-2 py-2">
           <div className="h-9 w-9 rounded-full bg-accent grid place-items-center font-semibold text-accent-foreground">
-            NB
+            {initials}
           </div>
-          <div className="leading-tight">
-            <div className="text-sm font-medium">Nguyễn Nhân Bảo</div>
+          <div className="leading-tight min-w-0">
+            <div className="text-sm font-medium truncate">{user?.name}</div>
             <div className="text-xs text-muted-foreground truncate max-w-[140px]">
-              nhanbao.0401@gmail.com
+              {user?.email}
             </div>
           </div>
         </div>
+        <Button variant="outline" size="sm" className="w-full gap-2" onClick={onLogout}>
+          <LogOut className="h-4 w-4" /> Logout
+        </Button>
       </div>
     </aside>
   );
