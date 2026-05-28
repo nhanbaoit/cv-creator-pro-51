@@ -9,6 +9,7 @@ export interface Personal {
   github: string;
   linkedin: string;
   portfolio: string;
+  avatar?: string;
 }
 
 export interface Education {
