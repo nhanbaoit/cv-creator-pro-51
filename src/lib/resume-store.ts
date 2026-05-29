@@ -8,6 +8,7 @@ import {
   uid,
 } from "./resume-types";
 import type { RecommendResult, RecommendInput } from "./recommend";
+import { CV_SAMPLES } from "./cv-samples";
 import { getCurrentEmail } from "./auth";
 
 const RECO_KEY = "devresume_recommendation";
