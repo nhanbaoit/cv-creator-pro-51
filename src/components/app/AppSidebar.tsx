@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FileEdit, LayoutTemplate, ShieldCheck, Settings, FileText, LogOut } from "lucide-react";
+import { LayoutDashboard, FileEdit, LayoutTemplate, ShieldCheck, Settings, FileText, LogOut, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutUser, useAuthStore } from "@/lib/auth";
 import { useResumeStore } from "@/lib/resume-store";
@@ -10,6 +10,7 @@ const items = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard },
   { to: "/editor", label: "CV Editor", icon: FileEdit },
   { to: "/templates", label: "Templates", icon: LayoutTemplate },
+  { to: "/recommendations", label: "CV Recommendations", icon: Sparkles },
   { to: "/ats", label: "ATS Checker", icon: ShieldCheck },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
