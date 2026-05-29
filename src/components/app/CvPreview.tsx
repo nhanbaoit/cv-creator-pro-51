@@ -1,4 +1,5 @@
 import { ResumeData, TemplateId } from "@/lib/resume-types";
+import { templateSupportsAvatar } from "@/lib/recommend";
 import { Github, Globe, Linkedin, Mail, MapPin, Phone } from "lucide-react";
 
 interface Props {
@@ -7,12 +8,18 @@ interface Props {
 }
 
 export function CvPreview({ data, template }: Props) {
+  // Defensive: strip avatar for templates that don't support it, so the data
+  // can never accidentally render in Harvard / Minimal layouts.
+  const safeData: ResumeData = templateSupportsAvatar(template)
+    ? data
+    : { ...data, personal: { ...data.personal, avatar: undefined } };
+
   return (
     <div className="a4-page font-serif" data-template={template}>
-      {template === "modern" && <ModernTemplate data={data} />}
-      {template === "harvard" && <HarvardTemplate data={data} />}
-      {template === "minimal" && <MinimalTemplate data={data} />}
-      {template === "creative" && <CreativeTemplate data={data} />}
+      {template === "harvard" && <HarvardTemplate data={safeData} />}
+      {template === "modern" && <ModernTemplate data={safeData} />}
+      {template === "minimal" && <MinimalTemplate data={safeData} />}
+      {template === "creative" && <CreativeTemplate data={safeData} />}
     </div>
   );
 }
