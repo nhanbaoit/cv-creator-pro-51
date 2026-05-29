@@ -46,31 +46,46 @@ export const STYLE_OPTIONS: { value: ResumeStyle; label: string }[] = [
   { value: "ats", label: "ATS-friendly" },
 ];
 
-export const TEMPLATE_META: Record<
-  TemplateId,
-  { name: string; tags: string[]; description: string }
-> = {
+export interface TemplateMeta {
+  name: string;
+  tags: string[];
+  description: string;
+  supportsAvatar: boolean;
+  avatarSize?: "small" | "large";
+}
+
+export const TEMPLATE_META: Record<TemplateId, TemplateMeta> = {
   harvard: {
     name: "Harvard Classic",
     tags: ["ATS-friendly", "Professional", "Best for Interns"],
     description: "Clean, traditional, easy to read. Great for formal companies.",
+    supportsAvatar: false,
   },
   modern: {
     name: "Modern Developer",
     tags: ["Project-focused", "Best for Interns"],
     description: "Modern, technical, project-focused layout for developers.",
+    supportsAvatar: true,
+    avatarSize: "small",
   },
   minimal: {
     name: "Minimal ATS",
     tags: ["ATS-friendly", "Minimal"],
     description: "Simple one-column layout optimized for ATS scanning.",
+    supportsAvatar: false,
   },
   creative: {
     name: "Creative Portfolio",
     tags: ["Creative", "Project-focused"],
     description: "Visual, modern layout for designers and portfolio applications.",
+    supportsAvatar: true,
+    avatarSize: "large",
   },
 };
+
+export function templateSupportsAvatar(t: TemplateId): boolean {
+  return TEMPLATE_META[t].supportsAvatar;
+}
 
 const ROLE_LABEL: Record<TargetRole, string> = Object.fromEntries(
   ROLE_OPTIONS.map((o) => [o.value, o.label])

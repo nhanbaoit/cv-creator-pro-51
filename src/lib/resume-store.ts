@@ -8,6 +8,7 @@ import {
   uid,
 } from "./resume-types";
 import type { RecommendResult, RecommendInput } from "./recommend";
+import { CV_SAMPLES } from "./cv-samples";
 import { getCurrentEmail } from "./auth";
 
 const RECO_KEY = "devresume_recommendation";
@@ -47,6 +48,7 @@ interface ResumeStore {
   resetMemory: () => void;
   setActive: (id: string) => void;
   createResume: (title?: string) => string;
+  remixSample: (sampleId: string) => string | null;
   duplicateResume: (id: string) => void;
   deleteResume: (id: string) => void;
   updateResume: (id: string, patch: Partial<Resume>) => void;
@@ -104,6 +106,21 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
       template: "modern",
       updatedAt: Date.now(),
       data: defaultResumeData,
+    };
+    set((s) => ({ resumes: [r, ...s.resumes], activeId: r.id }));
+    persist();
+    return r.id;
+  },
+
+  remixSample: (sampleId) => {
+    const sample = CV_SAMPLES.find((s) => s.id === sampleId);
+    if (!sample) return null;
+    const r: Resume = {
+      id: uid(),
+      title: `${sample.title} (Remix)`,
+      template: sample.template,
+      updatedAt: Date.now(),
+      data: sample.build(),
     };
     set((s) => ({ resumes: [r, ...s.resumes], activeId: r.id }));
     persist();
