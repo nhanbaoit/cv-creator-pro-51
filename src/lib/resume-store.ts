@@ -112,6 +112,21 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     return r.id;
   },
 
+  remixSample: (sampleId) => {
+    const sample = CV_SAMPLES.find((s) => s.id === sampleId);
+    if (!sample) return null;
+    const r: Resume = {
+      id: uid(),
+      title: `${sample.title} (Remix)`,
+      template: sample.template,
+      updatedAt: Date.now(),
+      data: sample.build(),
+    };
+    set((s) => ({ resumes: [r, ...s.resumes], activeId: r.id }));
+    persist();
+    return r.id;
+  },
+
   duplicateResume: (id) => {
     const r = get().resumes.find((x) => x.id === id);
     if (!r) return;
