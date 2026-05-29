@@ -48,6 +48,7 @@ interface ResumeStore {
   resetMemory: () => void;
   setActive: (id: string) => void;
   createResume: (title?: string) => string;
+  remixSample: (sampleId: string) => string | null;
   duplicateResume: (id: string) => void;
   deleteResume: (id: string) => void;
   updateResume: (id: string, patch: Partial<Resume>) => void;
