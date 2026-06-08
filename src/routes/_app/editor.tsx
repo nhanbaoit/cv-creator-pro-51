@@ -39,8 +39,18 @@ function EditorPage() {
   const resume = useActiveResume();
   const { updateData, setTemplate, resumes, setActive, lastRecommendation } = useResumeStore();
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [saveStatus, setSaveStatus] = useState<"saved" | "editing">("saved");
 
   const ats = useMemo(() => (resume ? computeAts(resume.data) : null), [resume]);
+
+  // Reflect a tiny "Editing → Saved" indicator whenever resume data changes.
+  useEffect(() => {
+    if (!resume) return;
+    setSaveStatus("editing");
+    const t = setTimeout(() => setSaveStatus("saved"), 500);
+    return () => clearTimeout(t);
+  }, [resume?.updatedAt, resume?.id]);
+
 
   if (!resume) {
     return (
