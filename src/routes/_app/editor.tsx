@@ -371,7 +371,25 @@ function Field({ label, v, on }: { label: string; v: string; on: (v: string) => 
 function RowActions({ onDelete }: { onDelete: () => void }) {
   return (
     <div className="flex justify-end">
-      <Button size="sm" variant="ghost" onClick={onDelete}><Trash2 /></Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button size="sm" variant="ghost" aria-label="Delete item"><Trash2 /></Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This entry will be removed from your CV. You can always add it back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { onDelete(); toast.success("Item removed"); }}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
