@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Topbar } from "@/components/app/Topbar";
 import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
+import { TEMPLATE_META } from "@/lib/recommend";
 
 export const Route = createFileRoute("/_app/")({
   component: DashboardPage,
