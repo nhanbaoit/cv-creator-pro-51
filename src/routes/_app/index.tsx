@@ -77,7 +77,7 @@ function DashboardPage() {
                   <div>
                     <h3 className="font-semibold truncate">{r.title}</h3>
                     <div className="flex items-center justify-between text-xs text-muted-foreground mt-1">
-                      <span className="capitalize">{r.template}</span>
+                      <span>{TEMPLATE_META[r.template]?.name ?? r.template}</span>
                       <span>{formatTime(r.updatedAt)}</span>
                     </div>
                     <div className="flex items-center gap-2 mt-2">
