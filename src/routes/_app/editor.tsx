@@ -87,8 +87,15 @@ function EditorPage() {
   return (
     <>
       <Topbar title="CV Editor" subtitle={resume.title}>
+        <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground mr-1">
+          {saveStatus === "saved" ? (
+            <><Check className="h-3.5 w-3.5 text-emerald-600" /> Saved</>
+          ) : (
+            <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Editing…</>
+          )}
+        </div>
         <div className="hidden lg:flex flex-col items-end leading-tight mr-1">
-          <div className="text-xs text-muted-foreground">Current template</div>
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Template</div>
           <div className="text-sm font-medium flex items-center gap-1.5">
             {templateLabels[resume.template]}
             {lastRecommendation && lastRecommendation.template !== resume.template && (
