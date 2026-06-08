@@ -11,11 +11,15 @@ import { CvPreview } from "@/components/app/CvPreview";
 import { useActiveResume, useResumeStore } from "@/lib/resume-store";
 import { computeAts } from "@/lib/ats";
 import { TemplateId, uid } from "@/lib/resume-types";
-import { Download, Plus, Trash2, ShieldCheck, Sparkles, Upload, X } from "lucide-react";
+import { Download, Plus, Trash2, ShieldCheck, Sparkles, Upload, X, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_app/editor")({
   component: EditorPage,
