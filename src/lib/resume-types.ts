@@ -89,33 +89,50 @@ export const uid = () => Math.random().toString(36).slice(2, 10);
 
 export const defaultResumeData: ResumeData = {
   personal: {
-    fullName: "Nguyễn Nhân Bảo",
-    title: "Frontend Developer Intern",
-    email: "nhanbao.0401@gmail.com",
-    phone: "0865792410",
-    location: "Ho Chi Minh City, Vietnam",
-    github: "github.com/nguyennhanbao",
-    linkedin: "linkedin.com/in/nguyennhanbao",
-    portfolio: "nguyennhanbao.dev",
+    fullName: "",
+    title: "",
+    email: "",
+    phone: "",
+    location: "",
+    github: "",
+    linkedin: "",
+    portfolio: "",
+    avatar: "",
   },
   summary:
-    "IT student with a strong interest in frontend development, experienced in building responsive web interfaces using HTML, CSS, JavaScript, React, and Tailwind CSS.",
+    "IT student with a strong interest in software development, experienced in building web applications and working with modern development tools.",
   education: [
     {
       id: uid(),
-      school: "College of Information Technology",
+      school: "",
       major: "Information Technology",
-      startYear: "2022",
-      endYear: "2026",
+      startYear: "",
+      endYear: "",
       description:
-        "Relevant coursework: Frontend Web, Java, C#, Database, Data Structures",
+        "Relevant coursework: Frontend Web, Programming, Database, Data Structures, Software Testing.",
     },
   ],
   skills: [
-    { id: uid(), category: "Frontend", items: "HTML, CSS, JavaScript, React, Tailwind CSS" },
-    { id: uid(), category: "Backend", items: "PHP, Laravel, MySQL" },
-    { id: uid(), category: "Tools", items: "Git, GitHub, Figma, VS Code" },
-    { id: uid(), category: "Testing", items: "Manual Testing, Test Case, Bug Report" },
+    {
+      id: uid(),
+      category: "Frontend",
+      items: "HTML, CSS, JavaScript, React, Tailwind CSS",
+    },
+    {
+      id: uid(),
+      category: "Backend",
+      items: "PHP, Laravel, MySQL",
+    },
+    {
+      id: uid(),
+      category: "Tools",
+      items: "Git, GitHub, Figma, VS Code",
+    },
+    {
+      id: uid(),
+      category: "Testing",
+      items: "Manual Testing, Test Case, Bug Report",
+    },
   ],
   projects: [
     {
@@ -125,8 +142,8 @@ export const defaultResumeData: ResumeData = {
       techStack: "React, Vite, Tailwind CSS",
       description:
         "Built a responsive personal portfolio website to showcase projects and skills.\nImplemented reusable React components and smooth UI animations.",
-      github: "github.com/nguyennhanbao/portfolio",
-      demo: "nguyennhanbao.dev",
+      github: "",
+      demo: "",
     },
     {
       id: uid(),
@@ -153,23 +170,35 @@ export const defaultResumeData: ResumeData = {
   certificates: [
     {
       id: uid(),
-      name: "AWS APAC Solutions Architecture Virtual Experience",
-      issuer: "Forage",
-      date: "2024",
-    },
-    {
-      id: uid(),
-      name: "Verizon Cloud Platform Virtual Experience",
-      issuer: "Forage",
-      date: "2024",
+      name: "Certificate Name",
+      issuer: "Issuer",
+      date: "",
     },
   ],
   languages: [
-    { id: uid(), name: "Vietnamese", level: "Native" },
-    { id: uid(), name: "English", level: "Intermediate" },
+    {
+      id: uid(),
+      name: "English",
+      level: "Intermediate",
+    },
   ],
   links: [],
 };
+
+export const createBlankResumeData = (user?: { name?: string; email?: string }): ResumeData => ({
+  ...JSON.parse(JSON.stringify(defaultResumeData)),
+  personal: {
+    fullName: user?.name ?? "",
+    title: "",
+    email: user?.email ?? "",
+    phone: "",
+    location: "",
+    github: "",
+    linkedin: "",
+    portfolio: "",
+    avatar: "",
+  },
+});
 
 export const sampleResumes = (): Resume[] => [
   {
@@ -177,20 +206,38 @@ export const sampleResumes = (): Resume[] => [
     title: "Frontend Intern CV",
     template: "modern",
     updatedAt: Date.now() - 1000 * 60 * 60 * 2,
-    data: defaultResumeData,
+    data: {
+      ...JSON.parse(JSON.stringify(defaultResumeData)),
+      personal: {
+        ...defaultResumeData.personal,
+        title: "Frontend Developer Intern",
+      },
+    },
   },
   {
     id: uid(),
     title: "PHP Developer Intern CV",
     template: "harvard",
     updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 3,
-    data: { ...defaultResumeData, personal: { ...defaultResumeData.personal, title: "PHP Developer Intern" } },
+    data: {
+      ...JSON.parse(JSON.stringify(defaultResumeData)),
+      personal: {
+        ...defaultResumeData.personal,
+        title: "PHP Developer Intern",
+      },
+    },
   },
   {
     id: uid(),
     title: "Software Tester Intern CV",
     template: "minimal",
     updatedAt: Date.now() - 1000 * 60 * 60 * 24 * 7,
-    data: { ...defaultResumeData, personal: { ...defaultResumeData.personal, title: "Software Tester Intern" } },
+    data: {
+      ...JSON.parse(JSON.stringify(defaultResumeData)),
+      personal: {
+        ...defaultResumeData.personal,
+        title: "Software Tester Intern",
+      },
+    },
   },
 ];
