@@ -11,11 +11,15 @@ import { CvPreview } from "@/components/app/CvPreview";
 import { useActiveResume, useResumeStore } from "@/lib/resume-store";
 import { computeAts } from "@/lib/ats";
 import { TemplateId, uid } from "@/lib/resume-types";
-import { Download, Plus, Trash2, ShieldCheck, Sparkles, Upload, X } from "lucide-react";
+import { Download, Plus, Trash2, ShieldCheck, Sparkles, Upload, X, Check, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
 import { Badge } from "@/components/ui/badge";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_app/editor")({
   component: EditorPage,
@@ -35,8 +39,18 @@ function EditorPage() {
   const resume = useActiveResume();
   const { updateData, setTemplate, resumes, setActive, lastRecommendation } = useResumeStore();
   const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [saveStatus, setSaveStatus] = useState<"saved" | "editing">("saved");
 
   const ats = useMemo(() => (resume ? computeAts(resume.data) : null), [resume]);
+
+  // Reflect a tiny "Editing → Saved" indicator whenever resume data changes.
+  useEffect(() => {
+    if (!resume) return;
+    setSaveStatus("editing");
+    const t = setTimeout(() => setSaveStatus("saved"), 500);
+    return () => clearTimeout(t);
+  }, [resume?.updatedAt, resume?.id]);
+
 
   if (!resume) {
     return (
@@ -73,8 +87,15 @@ function EditorPage() {
   return (
     <>
       <Topbar title="CV Editor" subtitle={resume.title}>
+        <div className="hidden md:flex items-center gap-1.5 text-xs text-muted-foreground mr-1">
+          {saveStatus === "saved" ? (
+            <><Check className="h-3.5 w-3.5 text-emerald-600" /> Saved</>
+          ) : (
+            <><Loader2 className="h-3.5 w-3.5 animate-spin" /> Editing…</>
+          )}
+        </div>
         <div className="hidden lg:flex flex-col items-end leading-tight mr-1">
-          <div className="text-xs text-muted-foreground">Current template</div>
+          <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Template</div>
           <div className="text-sm font-medium flex items-center gap-1.5">
             {templateLabels[resume.template]}
             {lastRecommendation && lastRecommendation.template !== resume.template && (
@@ -350,7 +371,25 @@ function Field({ label, v, on }: { label: string; v: string; on: (v: string) => 
 function RowActions({ onDelete }: { onDelete: () => void }) {
   return (
     <div className="flex justify-end">
-      <Button size="sm" variant="ghost" onClick={onDelete}><Trash2 /></Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button size="sm" variant="ghost" aria-label="Delete item"><Trash2 /></Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this item?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This entry will be removed from your CV. You can always add it back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => { onDelete(); toast.success("Item removed"); }}>
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
