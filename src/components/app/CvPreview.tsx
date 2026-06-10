@@ -153,6 +153,30 @@ function ModernTemplate({ data }: { data: ResumeData }) {
           </div>
         ))}
       </ModernSection>
+      {data.experience.length > 0 && (
+  <ModernSection title="Experience">
+    {data.experience.map((e) => (
+      <div key={e.id} className="mb-2">
+        <div className="flex justify-between">
+          <b>{e.company}</b>
+          <span>
+            {e.startDate} – {e.endDate}
+          </span>
+        </div>
+
+        <div className="italic">
+          {e.position}
+        </div>
+
+        <ul className="list-disc pl-5">
+          {bullets(e.description).map((l, i) => (
+            <li key={i}>{l}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </ModernSection>
+)}
       <ModernSection title="Education">
         {data.education.map((e) => (
           <div key={e.id}>
