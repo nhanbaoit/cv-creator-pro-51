@@ -10,8 +10,15 @@ import { toast } from "sonner";
 import { useEffect, useRef, useState } from "react";
 import { LogOut } from "lucide-react";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_app/settings")({
@@ -112,8 +119,12 @@ function SettingsPage() {
             All actions below apply only to your account ({user?.email}).
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={exportJson}>Export resume JSON</Button>
-            <Button variant="outline" onClick={() => fileRef.current?.click()}>Import resume JSON</Button>
+            <Button variant="outline" onClick={exportJson}>
+              Export resume JSON
+            </Button>
+            <Button variant="outline" onClick={() => fileRef.current?.click()}>
+              Import resume JSON
+            </Button>
             <input
               ref={fileRef}
               type="file"
@@ -135,7 +146,12 @@ function SettingsPage() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => { clearMyResumes(); toast.success("Your resumes were cleared"); }}>
+                  <AlertDialogAction
+                    onClick={() => {
+                      clearMyResumes();
+                      toast.success("Your resumes were cleared");
+                    }}
+                  >
                     Delete all
                   </AlertDialogAction>
                 </AlertDialogFooter>

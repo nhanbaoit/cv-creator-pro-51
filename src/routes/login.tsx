@@ -48,25 +48,19 @@ function LoginPage() {
           <div className="font-semibold text-lg">DevResume</div>
         </div>
         <div>
-          <h2 className="text-3xl font-bold leading-tight">
-            Craft an interview-winning resume.
-          </h2>
+          <h2 className="text-3xl font-bold leading-tight">Craft an interview-winning resume.</h2>
           <p className="mt-3 text-muted-foreground max-w-md">
-            Overleaf-style CV builder for IT students. Pick a template, edit live,
-            check your ATS score, and export PDF in one click.
+            Overleaf-style CV builder for IT students. Pick a template, edit live, check your ATS
+            score, and export PDF in one click.
           </p>
         </div>
-        <div className="text-xs text-muted-foreground">
-          Demo account: demo@gmail.com / 123456
-        </div>
+        <div className="text-xs text-muted-foreground">Demo account: demo@gmail.com / 123456</div>
       </div>
 
       <div className="flex items-center justify-center p-6">
         <Card className="p-7 w-full max-w-md">
           <h1 className="text-2xl font-semibold">Sign in</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Log in to manage your resumes.
-          </p>
+          <p className="text-sm text-muted-foreground mt-1">Log in to manage your resumes.</p>
           <form className="mt-5 space-y-4" onSubmit={onSubmit}>
             <div className="space-y-1.5">
               <Label>Email</Label>

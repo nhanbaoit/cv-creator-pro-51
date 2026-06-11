@@ -1,5 +1,14 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, FileEdit, LayoutTemplate, ShieldCheck, Settings, FileText, LogOut, Sparkles } from "lucide-react";
+import {
+  LayoutDashboard,
+  FileEdit,
+  LayoutTemplate,
+  ShieldCheck,
+  Settings,
+  FileText,
+  LogOut,
+  Sparkles,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logoutUser, useAuthStore } from "@/lib/auth";
 import { useResumeStore } from "@/lib/resume-store";
@@ -60,7 +69,7 @@ export function AppSidebar() {
                 "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
                 active
                   ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60"
+                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60",
               )}
             >
               <Icon className="h-4 w-4" />

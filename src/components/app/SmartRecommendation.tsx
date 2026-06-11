@@ -70,10 +70,14 @@ function RecommendForm({ onResult, compact }: FormProps) {
         <div className="space-y-1.5">
           <Label>Target Role</Label>
           <Select value={role} onValueChange={(v) => setRole(v as TargetRole)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               {ROLE_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -81,10 +85,14 @@ function RecommendForm({ onResult, compact }: FormProps) {
         <div className="space-y-1.5">
           <Label>Experience Level</Label>
           <Select value={exp} onValueChange={(v) => setExp(v as ExperienceLevel)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               {EXPERIENCE_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -92,10 +100,14 @@ function RecommendForm({ onResult, compact }: FormProps) {
         <div className="space-y-1.5">
           <Label>Resume Style</Label>
           <Select value={style} onValueChange={(v) => setStyle(v as ResumeStyle)}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
             <SelectContent>
               {STYLE_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                <SelectItem key={o.value} value={o.value}>
+                  {o.label}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -112,9 +124,7 @@ function RecommendForm({ onResult, compact }: FormProps) {
             <div className="flex-1 min-w-[220px]">
               <div className="flex items-center gap-2 flex-wrap">
                 <CheckCircle2 className="h-5 w-5 text-primary" />
-                <h4 className="font-semibold text-lg">
-                  {TEMPLATE_META[result.template].name}
-                </h4>
+                <h4 className="font-semibold text-lg">{TEMPLATE_META[result.template].name}</h4>
                 <Badge variant="default" className="gap-1">
                   <Sparkles className="h-3 w-3" />
                   {result.match}% match
@@ -123,7 +133,9 @@ function RecommendForm({ onResult, compact }: FormProps) {
               <p className="text-sm text-muted-foreground mt-2">{result.reason}</p>
               <div className="flex gap-1.5 mt-3 flex-wrap">
                 {TEMPLATE_META[result.template].tags.map((t) => (
-                  <Badge key={t} variant="secondary">{t}</Badge>
+                  <Badge key={t} variant="secondary">
+                    {t}
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -175,7 +187,12 @@ export function SmartRecommendationDialog({ trigger }: DialogProps) {
             Pick your target role, experience, and style — we'll recommend a template.
           </DialogDescription>
         </DialogHeader>
-        <RecommendForm compact onResult={() => { /* keep open to show result */ }} />
+        <RecommendForm
+          compact
+          onResult={() => {
+            /* keep open to show result */
+          }}
+        />
       </DialogContent>
     </Dialog>
   );

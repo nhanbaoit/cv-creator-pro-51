@@ -1,12 +1,6 @@
 import { TemplateId } from "./resume-types";
 
-export type TargetRole =
-  | "frontend"
-  | "backend"
-  | "php"
-  | "uiux"
-  | "tester"
-  | "data";
+export type TargetRole = "frontend" | "backend" | "php" | "uiux" | "tester" | "data";
 
 export type ExperienceLevel = "none" | "projects" | "internship";
 
@@ -88,15 +82,15 @@ export function templateSupportsAvatar(t: TemplateId): boolean {
 }
 
 const ROLE_LABEL: Record<TargetRole, string> = Object.fromEntries(
-  ROLE_OPTIONS.map((o) => [o.value, o.label])
+  ROLE_OPTIONS.map((o) => [o.value, o.label]),
 ) as Record<TargetRole, string>;
 
 const EXP_LABEL: Record<ExperienceLevel, string> = Object.fromEntries(
-  EXPERIENCE_OPTIONS.map((o) => [o.value, o.label])
+  EXPERIENCE_OPTIONS.map((o) => [o.value, o.label]),
 ) as Record<ExperienceLevel, string>;
 
 const STYLE_LABEL: Record<ResumeStyle, string> = Object.fromEntries(
-  STYLE_OPTIONS.map((o) => [o.value, o.label])
+  STYLE_OPTIONS.map((o) => [o.value, o.label]),
 ) as Record<ResumeStyle, string>;
 
 export function recommendTemplate(input: RecommendInput): RecommendResult {
@@ -113,36 +107,34 @@ export function recommendTemplate(input: RecommendInput): RecommendResult {
   if (role === "frontend" && style === "creative") {
     scores.creative += 45;
     reasons.push(
-      "you are applying for a Frontend Developer Intern position and prefer a creative style"
+      "you are applying for a Frontend Developer Intern position and prefer a creative style",
     );
   }
   // Rule: Frontend + personal projects => Modern Developer
   else if (role === "frontend" && experience === "projects") {
     scores.modern += 45;
     reasons.push(
-      "you are applying for a Frontend Developer Intern position and have personal projects to highlight React, JavaScript, UI skills, and portfolio work"
+      "you are applying for a Frontend Developer Intern position and have personal projects to highlight React, JavaScript, UI skills, and portfolio work",
     );
   }
   // Backend / PHP => Modern Developer
   else if (role === "backend" || role === "php") {
     scores.modern += 40;
     reasons.push(
-      `you are applying for a ${ROLE_LABEL[role]} role which benefits from a technical, project-focused layout`
+      `you are applying for a ${ROLE_LABEL[role]} role which benefits from a technical, project-focused layout`,
     );
   }
   // Tester / Data => Minimal ATS
   else if (role === "tester" || role === "data") {
     scores.minimal += 40;
     reasons.push(
-      `${ROLE_LABEL[role]} roles are often screened by ATS, so a keyword-friendly layout is ideal`
+      `${ROLE_LABEL[role]} roles are often screened by ATS, so a keyword-friendly layout is ideal`,
     );
   }
   // UI/UX => Creative Portfolio
   else if (role === "uiux") {
     scores.creative += 45;
-    reasons.push(
-      "UI/UX Designer Intern roles favor a visual, portfolio-driven layout"
-    );
+    reasons.push("UI/UX Designer Intern roles favor a visual, portfolio-driven layout");
   }
 
   // Style rules
@@ -164,7 +156,7 @@ export function recommendTemplate(input: RecommendInput): RecommendResult {
     scores.harvard += 20;
     scores.minimal += 15;
     reasons.push(
-      "with no prior experience, a clean traditional layout helps focus on education and skills"
+      "with no prior experience, a clean traditional layout helps focus on education and skills",
     );
   } else if (experience === "projects") {
     scores.modern += 20;
@@ -175,9 +167,7 @@ export function recommendTemplate(input: RecommendInput): RecommendResult {
   }
 
   // Pick winner
-  const winner = (Object.entries(scores) as [TemplateId, number][]).sort(
-    (a, b) => b[1] - a[1]
-  )[0];
+  const winner = (Object.entries(scores) as [TemplateId, number][]).sort((a, b) => b[1] - a[1])[0];
   const template = winner[0];
   const match = Math.min(98, Math.max(72, winner[1] + 10));
 

@@ -44,10 +44,15 @@ function TemplatesPage() {
                 <Card key={t.id} className="overflow-hidden flex flex-col relative">
                   {recommended && (
                     <div className="absolute top-3 right-3 z-10">
-                      <Badge className="gap-1 shadow"><Sparkles className="h-3 w-3" />Recommended</Badge>
+                      <Badge className="gap-1 shadow">
+                        <Sparkles className="h-3 w-3" />
+                        Recommended
+                      </Badge>
                     </div>
                   )}
-                  <div className={`aspect-[4/3] bg-gradient-to-br ${t.color} border-b grid place-items-center p-4`}>
+                  <div
+                    className={`aspect-[4/3] bg-gradient-to-br ${t.color} border-b grid place-items-center p-4`}
+                  >
                     <MiniPreview id={t.id} />
                   </div>
                   <div className="p-5 flex-1 flex flex-col">
@@ -55,26 +60,34 @@ function TemplatesPage() {
                       <h3 className="font-semibold">{meta.name}</h3>
                       {active && (
                         <span className="text-xs flex items-center gap-1 text-primary font-medium">
-                          <Check className="h-3 w-3" />In use
+                          <Check className="h-3 w-3" />
+                          In use
                         </span>
                       )}
                     </div>
                     <p className="text-sm text-muted-foreground mt-1 flex-1">{meta.description}</p>
                     <div className="flex gap-1.5 mt-3 flex-wrap">
                       {meta.tags.map((tag) => (
-                        <Badge key={tag} variant="secondary">{tag}</Badge>
+                        <Badge key={tag} variant="secondary">
+                          {tag}
+                        </Badge>
                       ))}
                     </div>
                     <Button
                       className="mt-4"
                       variant={active ? "secondary" : "default"}
                       onClick={() => {
-                        if (!resume) { toast.error("Create a CV first"); return; }
+                        if (!resume) {
+                          toast.error("Create a CV first");
+                          return;
+                        }
                         setTemplate(resume.id, t.id);
                         toast.success(`Selected ${meta.name}`);
                         navigate({ to: "/editor" });
                       }}
-                    >Use this template</Button>
+                    >
+                      Use this template
+                    </Button>
                   </div>
                 </Card>
               );

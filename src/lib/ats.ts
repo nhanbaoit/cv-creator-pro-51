@@ -17,8 +17,13 @@ export function computeAts(data: ResumeData): AtsResult {
   add("Tóm tắt bản thân", data.summary.trim().length > 30, 10, 10);
 
   const skillCount = data.skills.reduce(
-    (n, s) => n + s.items.split(",").map((x) => x.trim()).filter(Boolean).length,
-    0
+    (n, s) =>
+      n +
+      s.items
+        .split(",")
+        .map((x) => x.trim())
+        .filter(Boolean).length,
+    0,
   );
   add("Ít nhất 6 kỹ năng kỹ thuật", skillCount >= 6, 15, 15);
 
@@ -27,14 +32,14 @@ export function computeAts(data: ResumeData): AtsResult {
     "Mỗi dự án có tech stack",
     data.projects.length > 0 && data.projects.every((pr) => pr.techStack.trim().length > 0),
     10,
-    10
+    10,
   );
   add(
     "Mỗi dự án có mô tả bullet",
     data.projects.length > 0 &&
       data.projects.every((pr) => pr.description.split("\n").filter((l) => l.trim()).length >= 1),
     10,
-    10
+    10,
   );
   add("Có học vấn", data.education.length > 0, 10, 10);
   add("Có chứng chỉ", data.certificates.length > 0, 5, 5);
@@ -50,9 +55,7 @@ export function resumeToText(data: ResumeData): string {
   parts.push(data.summary);
   data.skills.forEach((s) => parts.push(s.category + " " + s.items));
   data.projects.forEach((p) => parts.push([p.name, p.role, p.techStack, p.description].join(" ")));
-  data.experience.forEach((e) =>
-    parts.push([e.company, e.position, e.description].join(" "))
-  );
+  data.experience.forEach((e) => parts.push([e.company, e.position, e.description].join(" ")));
   data.education.forEach((e) => parts.push([e.school, e.major, e.description].join(" ")));
   data.certificates.forEach((c) => parts.push(c.name + " " + c.issuer));
   return parts.join(" ").toLowerCase();
@@ -60,8 +63,36 @@ export function resumeToText(data: ResumeData): string {
 
 export function matchJobKeywords(data: ResumeData, jd: string) {
   const stop = new Set([
-    "and","or","the","a","an","for","of","to","in","on","with","is","are","be","you","we","our",
-    "as","at","by","this","that","will","have","has","from","using","use","ability","strong",
+    "and",
+    "or",
+    "the",
+    "a",
+    "an",
+    "for",
+    "of",
+    "to",
+    "in",
+    "on",
+    "with",
+    "is",
+    "are",
+    "be",
+    "you",
+    "we",
+    "our",
+    "as",
+    "at",
+    "by",
+    "this",
+    "that",
+    "will",
+    "have",
+    "has",
+    "from",
+    "using",
+    "use",
+    "ability",
+    "strong",
   ]);
   const keywords = Array.from(
     new Set(
@@ -69,8 +100,8 @@ export function matchJobKeywords(data: ResumeData, jd: string) {
         .toLowerCase()
         .replace(/[^a-z0-9+#.\-\s]/g, " ")
         .split(/\s+/)
-        .filter((w) => w.length > 2 && !stop.has(w))
-    )
+        .filter((w) => w.length > 2 && !stop.has(w)),
+    ),
   );
   const cv = resumeToText(data);
   const matched = keywords.filter((k) => cv.includes(k));

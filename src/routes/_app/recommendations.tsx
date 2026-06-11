@@ -4,7 +4,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Sparkles, Wand2, Search, FileText } from "lucide-react";
 import { CV_SAMPLES } from "@/lib/cv-samples";
 import { TEMPLATE_META } from "@/lib/recommend";
@@ -41,8 +47,10 @@ function RecommendationsPage() {
     const q = query.trim().toLowerCase();
     return CV_SAMPLES.filter((s) => {
       if (style !== "all" && s.template !== style) return false;
-      if (role !== "All" && !s.tags.some((t) => t.toLowerCase() === role.toLowerCase())) return false;
-      if (level !== "All" && !s.tags.some((t) => t.toLowerCase() === level.toLowerCase())) return false;
+      if (role !== "All" && !s.tags.some((t) => t.toLowerCase() === role.toLowerCase()))
+        return false;
+      if (level !== "All" && !s.tags.some((t) => t.toLowerCase() === level.toLowerCase()))
+        return false;
       if (q && !`${s.title} ${s.description} ${s.tags.join(" ")}`.toLowerCase().includes(q))
         return false;
       return true;
@@ -61,7 +69,10 @@ function RecommendationsPage() {
 
   return (
     <>
-      <Topbar title="CV Recommendations" subtitle="Pick a ready-made CV sample and remix it as your own" />
+      <Topbar
+        title="CV Recommendations"
+        subtitle="Pick a ready-made CV sample and remix it as your own"
+      />
       <main className="p-6 md:p-8 max-w-6xl w-full mx-auto space-y-6">
         <Card className="p-4 grid gap-3 md:grid-cols-[1fr_auto_auto_auto] items-end">
           <div className="space-y-1.5">
@@ -76,15 +87,29 @@ function RecommendationsPage() {
               />
             </div>
           </div>
-          <FilterSelect label="Target role" value={role} onChange={setRole} options={ROLE_OPTIONS} />
-          <FilterSelect label="Experience" value={level} onChange={setLevel} options={LEVEL_OPTIONS} />
+          <FilterSelect
+            label="Target role"
+            value={role}
+            onChange={setRole}
+            options={ROLE_OPTIONS}
+          />
+          <FilterSelect
+            label="Experience"
+            value={level}
+            onChange={setLevel}
+            options={LEVEL_OPTIONS}
+          />
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Resume style</label>
             <Select value={style} onValueChange={(v) => setStyle(v as TemplateId | "all")}>
-              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectTrigger className="w-48">
+                <SelectValue />
+              </SelectTrigger>
               <SelectContent>
                 {STYLE_OPTIONS.map((o) => (
-                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                  <SelectItem key={o.value} value={o.value}>
+                    {o.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -95,7 +120,9 @@ function RecommendationsPage() {
           <Card className="p-12 text-center border-dashed">
             <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
             <h3 className="font-semibold">No matching samples</h3>
-            <p className="text-sm text-muted-foreground">Try clearing filters or searching another keyword.</p>
+            <p className="text-sm text-muted-foreground">
+              Try clearing filters or searching another keyword.
+            </p>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -104,7 +131,10 @@ function RecommendationsPage() {
               const data = sample.build();
               const atsScore = computeAts(data).score;
               return (
-                <Card key={sample.id} className="overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+                <Card
+                  key={sample.id}
+                  className="overflow-hidden flex flex-col hover:shadow-md transition-shadow"
+                >
                   <div className="aspect-[4/3] border-b bg-gradient-to-br from-accent to-muted grid place-items-center overflow-hidden p-4">
                     <div className="origin-center scale-[0.32] w-[210mm] shadow-md bg-white rounded">
                       <CvPreview data={data} template={sample.template} />
@@ -117,12 +147,18 @@ function RecommendationsPage() {
                         <Sparkles className="h-3 w-3" />
                         {meta.name}
                       </Badge>
-                      <Badge variant="outline" className="ml-auto">ATS {atsScore}/100</Badge>
+                      <Badge variant="outline" className="ml-auto">
+                        ATS {atsScore}/100
+                      </Badge>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1 flex-1">{sample.description}</p>
+                    <p className="text-sm text-muted-foreground mt-1 flex-1">
+                      {sample.description}
+                    </p>
                     <div className="flex gap-1.5 mt-3 flex-wrap">
                       {sample.tags.map((t) => (
-                        <Badge key={t} variant="outline">{t}</Badge>
+                        <Badge key={t} variant="outline">
+                          {t}
+                        </Badge>
                       ))}
                     </div>
                     <Button className="mt-4 gap-2" onClick={() => onRemix(sample.id)}>
@@ -140,15 +176,29 @@ function RecommendationsPage() {
 }
 
 function FilterSelect({
-  label, value, onChange, options,
-}: { label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+}) {
   return (
     <div className="space-y-1.5">
       <label className="text-xs font-medium text-muted-foreground">{label}</label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+        <SelectTrigger className="w-40">
+          <SelectValue />
+        </SelectTrigger>
         <SelectContent>
-          {options.map((o) => <SelectItem key={o} value={o}>{o}</SelectItem>)}
+          {options.map((o) => (
+            <SelectItem key={o} value={o}>
+              {o}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

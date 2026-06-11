@@ -76,7 +76,12 @@ function RegisterPage() {
             </div>
             <div className="space-y-1.5">
               <Label>Email</Label>
-              <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
             <div className="space-y-1.5">
               <Label>Password</Label>

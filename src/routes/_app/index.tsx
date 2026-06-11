@@ -6,8 +6,15 @@ import { useResumeStore } from "@/lib/resume-store";
 import { computeAts } from "@/lib/ats";
 import { toast } from "sonner";
 import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Topbar } from "@/components/app/Topbar";
 import { SmartRecommendationDialog } from "@/components/app/SmartRecommendation";
@@ -41,25 +48,36 @@ function DashboardPage() {
     <>
       <Topbar title="My Resumes" subtitle="Manage all your CVs in one place">
         <SmartRecommendationDialog />
-        <Button onClick={handleCreate}><Plus /> New CV</Button>
+        <Button onClick={handleCreate}>
+          <Plus /> New CV
+        </Button>
       </Topbar>
       <main className="p-6 md:p-8 max-w-7xl w-full mx-auto">
         {resumes.length === 0 ? (
           <Card className="p-12 text-center border-dashed">
             <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
             <h3 className="font-semibold text-lg">No resumes yet</h3>
-            <p className="text-sm text-muted-foreground mb-4">Start building your first CV right now.</p>
-            <Button onClick={handleCreate}><Plus /> Create CV</Button>
+            <p className="text-sm text-muted-foreground mb-4">
+              Start building your first CV right now.
+            </p>
+            <Button onClick={handleCreate}>
+              <Plus /> Create CV
+            </Button>
           </Card>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {resumes.map((r) => {
               const ats = computeAts(r.data);
               return (
-                <Card key={r.id} className="p-5 hover:shadow-md transition-shadow flex flex-col gap-4">
+                <Card
+                  key={r.id}
+                  className="p-5 hover:shadow-md transition-shadow flex flex-col gap-4"
+                >
                   <div className="aspect-[1/1.2] rounded-md bg-gradient-to-br from-accent to-muted border grid place-items-center overflow-hidden relative">
                     <div className="absolute inset-3 bg-white rounded-sm shadow-sm p-3 text-[6px] leading-tight overflow-hidden">
-                      <div className="font-bold text-[8px] text-neutral-800">{r.data.personal.fullName}</div>
+                      <div className="font-bold text-[8px] text-neutral-800">
+                        {r.data.personal.fullName}
+                      </div>
                       <div className="text-indigo-600">{r.data.personal.title}</div>
                       <div className="h-px bg-neutral-300 my-1"></div>
                       <div className="space-y-0.5">
@@ -88,14 +106,25 @@ function DashboardPage() {
                   </div>
                   <div className="flex gap-2 mt-auto">
                     <Button size="sm" className="flex-1" asChild onClick={() => setActive(r.id)}>
-                      <Link to="/editor"><FileEdit /> Edit</Link>
+                      <Link to="/editor">
+                        <FileEdit /> Edit
+                      </Link>
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => { duplicateResume(r.id); toast.success("Resume duplicated"); }}>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        duplicateResume(r.id);
+                        toast.success("Resume duplicated");
+                      }}
+                    >
                       <Copy />
                     </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="outline"><Trash2 /></Button>
+                        <Button size="sm" variant="outline">
+                          <Trash2 />
+                        </Button>
                       </AlertDialogTrigger>
                       <AlertDialogContent>
                         <AlertDialogHeader>
@@ -107,8 +136,13 @@ function DashboardPage() {
                         <AlertDialogFooter>
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
-                            onClick={() => { deleteResume(r.id); toast.success("Resume deleted"); }}
-                          >Delete</AlertDialogAction>
+                            onClick={() => {
+                              deleteResume(r.id);
+                              toast.success("Resume deleted");
+                            }}
+                          >
+                            Delete
+                          </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
                     </AlertDialog>
