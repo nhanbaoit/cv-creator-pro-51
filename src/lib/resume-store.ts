@@ -3,6 +3,7 @@ import { Resume, ResumeData, TemplateId, defaultResumeData, uid } from "./resume
 import type { RecommendResult, RecommendInput } from "./recommend";
 import { CV_SAMPLES } from "./cv-samples";
 import { getCurrentEmail, getCurrentUser } from "./auth";
+import { supabase } from "./supabase";
 
 const RECO_KEY = "devresume_recommendation";
 
@@ -32,6 +33,10 @@ function resumesKey(email: string) {
 }
 
 function loadForEmail(email: string): PersistedShape {
+  if (typeof window === "undefined") {
+    return { resumes: [], activeId: null };
+  }
+
   const raw = localStorage.getItem(resumesKey(email));
 
   if (!raw) {
@@ -62,6 +67,7 @@ function loadForEmail(email: string): PersistedShape {
 }
 
 function saveForEmail(email: string, state: PersistedShape) {
+  if (typeof window === "undefined") return;
   localStorage.setItem(resumesKey(email), JSON.stringify(state));
 }
 
@@ -92,20 +98,15 @@ function createEmptyResumeData(): ResumeData {
 
   return data as ResumeData;
 }
+
 function sanitizeSampleForCurrentUser(data: ResumeData): ResumeData {
   const user = getCurrentUser();
   const cloned = cloneResumeData(data) as any;
 
   cloned.personal = {
     ...(cloned.personal ?? {}),
-    fullName: user?.name ?? "",
-    email: user?.email ?? "",
-    phone: "",
-    location: "",
-    github: "",
-    linkedin: "",
-    portfolio: "",
-    avatar: "",
+    fullName: user?.name || cloned.personal?.fullName || "",
+    email: user?.email || cloned.personal?.email || "",
   };
 
   return cloned as ResumeData;
@@ -115,44 +116,44 @@ interface ResumeStore {
   hydrated: boolean;
   resumes: Resume[];
   activeId: string | null;
-  lastRecommendation: (RecommendResult & { input: RecommendInput }) | null;
 
-  setRecommendation: (r: (RecommendResult & { input: RecommendInput }) | null) => void;
+  recommendation: RecommendResult | null;
+  setRecommendation: (r: RecommendResult | null) => void;
+  clearRecommendation: () => void;
 
-  loadForCurrentUser: () => void;
+  hydrateForCurrentEmail: () => Promise<void>;
   resetMemory: () => void;
+
   setActive: (id: string) => void;
   createResume: (title?: string) => string;
   remixSample: (sampleId: string) => string | null;
-  duplicateResume: (id: string) => void;
+  duplicateResume: (id: string) => string | undefined;
   deleteResume: (id: string) => void;
-  updateResume: (id: string, patch: Partial<Resume>) => void;
-  updateData: (id: string, updater: (d: ResumeData) => ResumeData) => void;
+  renameResume: (id: string, title: string) => void;
+  updateResumeData: (
+    id: string,
+    updater: (prev: ResumeData) => ResumeData,
+  ) => void;
   setTemplate: (id: string, template: TemplateId) => void;
   importJSON: (json: string) => boolean;
   clearMyResumes: () => void;
 }
 
-export const useResumeStore = create<ResumeStore>()((set, get) => ({
+export const useResumeStore = create<ResumeStore>((set, get) => ({
   hydrated: false,
   resumes: [],
   activeId: null,
 
-  lastRecommendation:
-    typeof window !== "undefined"
-      ? (() => {
-          try {
-            const raw = localStorage.getItem(RECO_KEY);
-            return raw ? JSON.parse(raw) : null;
-          } catch {
-            return null;
-          }
-        })()
-      : null,
+  recommendation: (() => {
+    if (typeof window === "undefined") return null;
+    return safeParse<RecommendResult | null>(
+      localStorage.getItem(RECO_KEY),
+      null,
+    );
+  })(),
 
   setRecommendation: (r) => {
-    set({ lastRecommendation: r });
-
+    set({ recommendation: r });
     if (typeof window !== "undefined") {
       if (r) {
         localStorage.setItem(RECO_KEY, JSON.stringify(r));
@@ -162,7 +163,14 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     }
   },
 
-  loadForCurrentUser: () => {
+  clearRecommendation: () => {
+    set({ recommendation: null });
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(RECO_KEY);
+    }
+  },
+
+  hydrateForCurrentEmail: async () => {
     const email = getCurrentEmail();
 
     if (!email) {
@@ -174,13 +182,44 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
       return;
     }
 
-    const data = loadForEmail(email);
-
+    // 1. Tải nhanh từ LocalStorage trước
+    const localData = loadForEmail(email);
     set({
       hydrated: true,
-      resumes: data.resumes,
-      activeId: data.activeId,
+      resumes: localData.resumes,
+      activeId: localData.activeId,
     });
+
+    // 2. Đồng bộ ngầm từ Supabase Database nếu có mạng
+    try {
+      const { data, error } = await supabase
+        .from("resumes")
+        .select("*")
+        .eq("user_email", email.trim().toLowerCase())
+        .order("updated_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        const cloudResumes: Resume[] = data.map((row) => ({
+          id: row.id,
+          title: row.title,
+          template: row.template_id as TemplateId,
+          updatedAt: Number(row.updated_at),
+          data: row.data as ResumeData,
+        }));
+
+        set({
+          resumes: cloudResumes,
+          activeId: cloudResumes[0]?.id ?? null,
+        });
+
+        saveForEmail(email, {
+          resumes: cloudResumes,
+          activeId: cloudResumes[0]?.id ?? null,
+        });
+      }
+    } catch (e) {
+      console.warn("Supabase load failed, fallback to local:", e);
+    }
   },
 
   resetMemory: () =>
@@ -214,6 +253,7 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     }));
 
     persist();
+    syncToSupabase(r);
 
     return r.id;
   },
@@ -240,6 +280,7 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     }));
 
     persist();
+    syncToSupabase(r);
 
     return r.id;
   },
@@ -250,9 +291,9 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     if (!r) return;
 
     const copy: Resume = {
-      ...r,
       id: uid(),
       title: `${r.title} (Copy)`,
+      template: r.template,
       updatedAt: Date.now(),
       data: cloneResumeData(r.data),
     };
@@ -263,38 +304,40 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     }));
 
     persist();
+    syncToSupabase(copy);
+
+    return copy.id;
   },
 
   deleteResume: (id) => {
     set((s) => {
-      const resumes = s.resumes.filter((r) => r.id !== id);
+      const next = s.resumes.filter((r) => r.id !== id);
+      const nextActive =
+        s.activeId === id ? (next[0]?.id ?? null) : s.activeId;
 
       return {
-        resumes,
-        activeId: s.activeId === id ? (resumes[0]?.id ?? null) : s.activeId,
+        resumes: next,
+        activeId: nextActive,
       };
     });
 
     persist();
+    deleteFromSupabase(id);
   },
 
-  updateResume: (id, patch) => {
+  renameResume: (id, title) => {
     set((s) => ({
       resumes: s.resumes.map((r) =>
-        r.id === id
-          ? {
-              ...r,
-              ...patch,
-              updatedAt: Date.now(),
-            }
-          : r,
+        r.id === id ? { ...r, title, updatedAt: Date.now() } : r,
       ),
     }));
 
     persist();
+    const updated = get().resumes.find((r) => r.id === id);
+    if (updated) syncToSupabase(updated);
   },
 
-  updateData: (id, updater) => {
+  updateResumeData: (id, updater) => {
     set((s) => ({
       resumes: s.resumes.map((r) =>
         r.id === id
@@ -308,6 +351,8 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     }));
 
     persist();
+    const updated = get().resumes.find((r) => r.id === id);
+    if (updated) syncToSupabase(updated);
   },
 
   setTemplate: (id, template) => {
@@ -324,6 +369,8 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
     }));
 
     persist();
+    const updated = get().resumes.find((r) => r.id === id);
+    if (updated) syncToSupabase(updated);
   },
 
   importJSON: (json) => {
@@ -343,6 +390,7 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
         }));
 
         persist();
+        syncToSupabase(r);
 
         return true;
       }
@@ -354,12 +402,14 @@ export const useResumeStore = create<ResumeStore>()((set, get) => ({
   },
 
   clearMyResumes: () => {
+    const list = get().resumes;
     set({
       resumes: [],
       activeId: null,
     });
 
     persist();
+    list.forEach((r) => deleteFromSupabase(r.id));
   },
 }));
 
@@ -374,6 +424,36 @@ function persist() {
     resumes,
     activeId,
   });
+}
+
+async function syncToSupabase(resume: Resume) {
+  const email = getCurrentEmail();
+  if (!email) return;
+
+  try {
+    await supabase.from("resumes").upsert(
+      {
+        id: resume.id,
+        user_email: email.trim().toLowerCase(),
+        title: resume.title,
+        template_id: resume.template,
+        data: resume.data,
+        created_at: resume.updatedAt,
+        updated_at: resume.updatedAt,
+      },
+      { onConflict: "id" },
+    );
+  } catch (err) {
+    console.error("Failed to sync resume to Supabase:", err);
+  }
+}
+
+async function deleteFromSupabase(id: string) {
+  try {
+    await supabase.from("resumes").delete().eq("id", id);
+  } catch (err) {
+    console.error("Failed to delete resume from Supabase:", err);
+  }
 }
 
 export const useActiveResume = () => {
